@@ -10,7 +10,7 @@ import java.net.URI
  * Gameyfin groups results of all providers by normalized title and release year, and without them this provider's
  * result never merges. Steam is the primary source, GOG fills gaps and covers titles Steam does not sell.
  */
-class StoreExtras(private val steam: SteamClient, private val gog: GogClient) {
+class StoreExtras(private val steam: SteamClient, private val gog: GogClient, private val pcgw: PcgwClient? = null) {
 
     fun fetchByTitle(title: String, platformFilter: Set<Platform>, maxResults: Int): List<GameMetadata> {
         val limit = maxResults.coerceAtLeast(1)
@@ -59,6 +59,7 @@ class StoreExtras(private val steam: SteamClient, private val gog: GogClient) {
             app.metacritic?.takeIf { it in 1..100 }?.let { add(Badges.metacritic(it, app.metacriticUrl)) }
             if (steam.deckVerified(appId)) add(Badges.steamDeckVerified())
             SteamCategories.modeLabels(app.categories).forEach { add(Badges.mode(it)) }
+            if (confident) addAll(playerCounts { pcgw?.multiplayer(steamAppId = appId, gogId = null, title = title) })
         }
         val body = (app.descriptionHtml ?: gogDetails?.descriptionHtml)?.let(HtmlMarkdown::convert)
         val features = SteamCategories.features(app.categories).ifEmpty { GogFeatures.features(other?.features.orEmpty()) }
@@ -88,6 +89,7 @@ class StoreExtras(private val steam: SteamClient, private val gog: GogClient) {
         val badges = buildList {
             if (match >= CONFIDENT) hit.storeLink?.let { add(Badges.gog(hit.badgeRating, it)) }
             addAll(GogFeatures.modeLabels(features).map(Badges::mode))
+            if (match >= CONFIDENT) addAll(playerCounts { pcgw?.multiplayer(steamAppId = null, gogId = hit.id, title = hit.title) })
         }
         val body = details.descriptionHtml?.let(HtmlMarkdown::convert)
         return GameMetadata(
@@ -104,6 +106,10 @@ class StoreExtras(private val steam: SteamClient, private val gog: GogClient) {
             features = features.ifEmpty { null },
         )
     }
+
+    /** PCGamingWiki is optional extra: whatever goes wrong there, the rest of the metadata is still delivered. */
+    private fun playerCounts(lookup: () -> List<MultiplayerMode>?): List<String> =
+        try { lookup().orEmpty().map(Badges::multiplayer) } catch (_: Exception) { emptyList() }
 
     private fun gogHeaders(hit: GogHit): Set<URI>? =
         listOfNotNull(hit.background, hit.coverHorizontal).map(::URI).toCollection(LinkedHashSet()).ifEmpty { null }

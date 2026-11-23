@@ -8,7 +8,7 @@ import java.net.http.HttpResponse
 import java.time.Duration
 
 /** Result of a plain HTTP GET. Redirects are never followed; a 3xx is reported as-is. */
-data class HttpResult(val status: Int, val body: String) {
+data class HttpResult(val status: Int, val body: String, val location: String? = null) {
     val ok: Boolean get() = status in 200..299
 }
 
@@ -29,7 +29,7 @@ class JdkHttpFetcher : HttpFetcher {
 
     private val lastRequestAt = HashMap<String, Long>()
 
-    override fun get(url: String): HttpResult? = send(url, head = false)?.let { HttpResult(it.statusCode(), it.body() ?: "") }
+    override fun get(url: String): HttpResult? = send(url, head = false)?.let { HttpResult(it.statusCode(), it.body() ?: "", it.headers().firstValue("Location").orElse(null)) }
 
     override fun exists(url: String): Boolean = send(url, head = true)?.statusCode() in 200..299
 
@@ -54,9 +54,9 @@ class JdkHttpFetcher : HttpFetcher {
         }
     }
 
-    /** Keeps us polite: at most one request per host and interval (SteamSpy asks for 1 request/s). */
+    /** Keeps us polite: at most one request per host and interval (SteamSpy and PCGamingWiki ask for at most 1 request/s). */
     private fun throttle(host: String) {
-        val interval = if (host.contains("steamspy")) 1_100L else 250L
+        val interval = if (host.contains("steamspy") || host.contains("pcgamingwiki")) 1_100L else 250L
         val wait = synchronized(lastRequestAt) {
             val now = System.currentTimeMillis()
             val next = maxOf(now, (lastRequestAt[host] ?: 0L) + interval)
@@ -68,6 +68,6 @@ class JdkHttpFetcher : HttpFetcher {
 
     companion object {
         // Deliberately generic: no personal data, no instance information.
-        const val USER_AGENT = "Mozilla/5.0 (compatible; GameyfinStoreExtras/1.0)"
+        const val USER_AGENT = "Mozilla/5.0 (compatible; GameyfinStoreExtras/1.2; +https://github.com/DevHovAI/gameyfin-store-extras)"
     }
 }

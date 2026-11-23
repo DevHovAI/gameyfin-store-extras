@@ -61,6 +61,15 @@ object Badges {
 
     fun mode(label: String): String = markdown(null, label, MODE_COLOR)
 
+    /** Player count badge for one multiplayer mode: `Local | 4 players`, or without a count `Local multiplayer, Co-op`. */
+    fun multiplayer(mode: MultiplayerMode): String {
+        val extras = listOfNotNull("Co-op".takeIf { mode.coop }, "Versus".takeIf { mode.versus })
+        val count = mode.players
+        if (count == null) return markdown(null, (listOf("${mode.kind} multiplayer") + extras).joinToString(", "), MODE_COLOR)
+        val noun = if (count == "1") "player" else "players"
+        return markdown(mode.kind, (listOf("$count $noun") + extras).joinToString(", "), MODE_COLOR)
+    }
+
     /** Badge line, a blank line, then the body; null when there is no body so that lower priority descriptions still show. */
     fun description(badges: List<String>, body: String?): String? {
         val text = body?.trim()?.takeIf { it.isNotEmpty() } ?: return null

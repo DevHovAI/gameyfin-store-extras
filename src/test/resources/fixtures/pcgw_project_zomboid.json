@@ -1,0 +1,7 @@
+{
+ "parse": {
+  "title": "Project Zomboid",
+  "pageid": 2543,
+  "wikitext": "{{Infobox game\n|steam appid  = 108600\n|gogcom id    = 1453298883\n}}\n{{Network/Multiplayer\n|local play           = true\n|local play players   = 4\n|local play modes     = \n|lan play             = true\n|lan play players     = 100\n|lan play modes       = \n|online play          = true\n|online play players  = 100\n|online play modes    = \n}}\n"
+ }
+}

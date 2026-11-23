@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.0
+
+- New: player counts as badges, from PCGamingWiki. For every mode the wiki lists as available, the description's badge
+  line gets a badge such as `Local 4 players`, `LAN 100 players` or `Online 4 players, Co-op`. Counts can be
+  numbers or ranges (`2-4`); when the wiki has the mode but no count, the badge shows the mode only
+  (`Online multiplayer`). Co-op and Versus are added where the wiki names them.
+- The wiki page is found through the Steam app id (GOG id for GOG-only titles) and the id in the page's infobox is
+  checked, with a title search as fallback. Results are cached (24 h, failures 1 h), requests are at least one second
+  apart, and any PCGamingWiki problem simply means no extra badges: the rest of the metadata is unaffected.
+- The user agent now names the plugin and its repository.
+
 ## 1.1.0
 
 - Fix: 1.0.1 was published without `META-INF/extensions.idx`. Gameyfin then showed the plugin as running and valid

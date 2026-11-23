@@ -34,13 +34,34 @@ Gather your party and return to the Forgotten Realms ...
 Badges are static [shields.io](https://shields.io) images, so the browser fetches them from img.shields.io. They are
 only added when they apply and the store match is confident: Steam score with Steam's own label, GOG score,
 Metacritic score, "Steam Deck Verified", and the game modes (Single-player, Online Co-op, Local Co-op, Online PvP,
-Local PvP, MMO, Controller support). The text is English, with videos removed; headings, lists, links and images
+Local PvP, MMO, Controller support) and, from PCGamingWiki, player counts per mode (see below). The text is English, with videos removed; headings, lists, links and images
 are kept. If a store has no text for a game, no description is returned at all, so a lower priority provider's
 description still shows.
 
 **Set Store Extras to the highest priority** (Administration -> Plugins). Since 1.1.0 it also supplies the
 description and the features, and only wins those fields if it is first. If you prefer another provider's
 description, keep Store Extras second: it then still fills the rating, banner, trailer and feature gaps.
+
+## Player counts (PCGamingWiki)
+
+Since 1.2.0 the badge line also shows how many people can play together, for each mode PCGamingWiki lists as
+available, e.g. for Project Zomboid:
+
+```
+![Local 4 players](https://img.shields.io/badge/Local-4%20players-4c566a) ![LAN 100 players](https://img.shields.io/badge/LAN-100%20players-4c566a) ![Online 100 players](https://img.shields.io/badge/Online-100%20players-4c566a)
+```
+
+- A mode only gets a badge if the wiki marks it as available. Counts may be numbers or ranges (`2-4`); with no
+  count the badge shows just the mode (`Online multiplayer`). `Co-op` / `Versus` are appended where the wiki names them.
+- The page is found via the Steam app id (GOG id for GOG-only titles), the id in its infobox is verified, and a
+  title search is the fallback. Single-player games and unknown ids simply get no such badge.
+- Results are cached in memory (24 hours; failures for one hour) and PCGamingWiki is asked at most once per second.
+  If it is down or answers nonsense, everything else is delivered as before.
+
+Attribution: multiplayer data comes from [PCGamingWiki](https://www.pcgamingwiki.com), whose content is available under
+[CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/). Store Extras reads only facts (yes/no, player
+counts, mode names) through the public MediaWiki API; no wiki text is copied or stored. Thanks to the PCGamingWiki
+contributors.
 
 ## How matching works
 
