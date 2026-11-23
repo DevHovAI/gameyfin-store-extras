@@ -1,0 +1,132 @@
+{
+ "108600": {
+  "success": true,
+  "data": {
+   "type": "game",
+   "name": "Project Zomboid",
+   "steam_appid": 108600,
+   "required_age": 0,
+   "is_free": false,
+   "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/108600/header.jpg?t=1794338497",
+   "capsule_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/108600/capsule_231x87.jpg?t=1794338497",
+   "capsule_imagev5": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/108600/capsule_184x69.jpg?t=1794338497",
+   "developers": [
+    "The Indie Stone"
+   ],
+   "publishers": [
+    "The Indie Stone"
+   ],
+   "platforms": {
+    "windows": true,
+    "mac": true,
+    "linux": true
+   },
+   "categories": [
+    {
+     "id": 2,
+     "description": "Single-player"
+    },
+    {
+     "id": 1,
+     "description": "Multi-player"
+    },
+    {
+     "id": 49,
+     "description": "PvP"
+    },
+    {
+     "id": 36,
+     "description": "Online PvP"
+    },
+    {
+     "id": 9,
+     "description": "Co-op"
+    },
+    {
+     "id": 38,
+     "description": "Online Co-op"
+    },
+    {
+     "id": 39,
+     "description": "Shared/Split Screen Co-op"
+    },
+    {
+     "id": 24,
+     "description": "Shared/Split Screen"
+    },
+    {
+     "id": 27,
+     "description": "Cross-Platform Multiplayer"
+    },
+    {
+     "id": 29,
+     "description": "Steam Trading Cards"
+    },
+    {
+     "id": 30,
+     "description": "Steam Workshop"
+    },
+    {
+     "id": 18,
+     "description": "Partial Controller Support"
+    },
+    {
+     "id": 44,
+     "description": "Remote Play Together"
+    },
+    {
+     "id": 62,
+     "description": "Family Sharing"
+    }
+   ],
+   "genres": [
+    {
+     "id": "23",
+     "description": "Indie"
+    },
+    {
+     "id": "3",
+     "description": "RPG"
+    },
+    {
+     "id": "28",
+     "description": "Simulation"
+    },
+    {
+     "id": "70",
+     "description": "Early Access"
+    }
+   ],
+   "movies": [
+    {
+     "id": 257387571,
+     "name": "Build 42 Zomboid Trailer",
+     "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257387571/7413640d5700fc7020002682b958233c04463d0e/movie_600x337.jpg?t=1785324122",
+     "dash_av1": "https://video.akamai.steamstatic.com/store_trailers/108600/619982392/141cfd121ea068a87c023951bdbfee87ca524de1/1785320937/dash_av1.mpd?t=1785324122",
+     "dash_h264": "https://video.akamai.steamstatic.com/store_trailers/108600/619982392/141cfd121ea068a87c023951bdbfee87ca524de1/1785320937/dash_h264.mpd?t=1785324122",
+     "hls_h264": "https://video.akamai.steamstatic.com/store_trailers/108600/619982392/141cfd121ea068a87c023951bdbfee87ca524de1/1785320937/hls_264_master.m3u8?t=1785324122",
+     "highlight": true
+    },
+    {
+     "id": 257387576,
+     "name": "Build 42 Map Trailer",
+     "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257387576/319e56e0fdf699518dfa5661e79b103fc8f12ad7/movie_600x337.jpg?t=1785324123",
+     "dash_av1": "https://video.akamai.steamstatic.com/store_trailers/108600/1068764969/0b5bcb57cecb7b05c21f23de1ea92a8287c343e7/1785321988/dash_av1.mpd?t=1785324123",
+     "dash_h264": "https://video.akamai.steamstatic.com/store_trailers/108600/1068764969/0b5bcb57cecb7b05c21f23de1ea92a8287c343e7/1785321988/dash_h264.mpd?t=1785324123",
+     "hls_h264": "https://video.akamai.steamstatic.com/store_trailers/108600/1068764969/0b5bcb57cecb7b05c21f23de1ea92a8287c343e7/1785321988/hls_264_master.m3u8?t=1785324123",
+     "highlight": true
+    }
+   ],
+   "recommendations": {
+    "total": 375686
+   },
+   "release_date": {
+    "coming_soon": false,
+    "date": "8 Nov, 2013"
+   },
+   "background": "https://store.akamai.steamstatic.com/images/storepagebackground/app/108600?t=1794338497",
+   "background_raw": "https://store.akamai.steamstatic.com/images/storepagebackground/app/108600?t=1794338497",
+   "short_description": "Fixture description."
+  }
+ }
+}
