@@ -3,8 +3,8 @@
     {
       "id": "io.github.devhovai.gameyfin.plugins.metadata.storeextras",
       "name": "Store Extras",
-      "shortDescription": "Adds a description with rating badges, features, Steam/GOG ratings, Metacritic, banners and trailers.",
-      "description": "Metadata provider built on the Steam and GOG stores: description (Markdown, with a line of Steam/GOG/Metacritic/Steam Deck/game-mode badges on top), features (from Steam categories), user rating (Steam reviews, SteamSpy fallback), critic rating (Metacritic via Steam), header/banner images (Steam library hero, then header) and up to four trailers. GOG covers titles Steam does not sell.\n\nPut it at the top of the metadata priority list so that it wins those fields; other providers keep supplying covers, screenshots, genres and the rest.",
+      "shortDescription": "Adds a description with rating and player-count badges, features, Steam/GOG ratings, Metacritic, banners and trailers.",
+      "description": "Metadata provider built on the Steam and GOG stores: description (Markdown, with a line of Steam/GOG/Metacritic/Steam Deck/game-mode badges and PCGamingWiki player counts on top), features (from Steam categories), user rating (Steam reviews, SteamSpy fallback), critic rating (Metacritic via Steam), header/banner images (Steam library hero, then header) and up to four trailers. GOG covers titles Steam does not sell.\n\nPut it at the top of the metadata priority list so that it wins those fields; other providers keep supplying covers, screenshots, genres and the rest.",
       "provider": "DevHovAI",
       "license": "AGPL-3.0",
       "projectUrl": "https://github.com/DevHovAI/gameyfin-store-extras",
@@ -20,9 +20,17 @@
         "trailers",
         "artwork",
         "description",
-        "features"
+        "features",
+        "multiplayer"
       ],
       "releases": [
+        {
+          "version": "1.2.0",
+          "date": "2026-11-24",
+          "requires": ">=2.7.0",
+          "url": "https://github.com/DevHovAI/gameyfin-store-extras/releases/download/v1.2.0/gameyfin-store-extras-1.2.0.jar",
+          "sha512sum": "931f1e19d4321b0334e60905d307c70f09a7a11fff3635d50e43e3a1f72e744c902ea1052f10544fb78f8dfe747b760f98ff0f6c463418e7cc9ed72ce1dc15b1"
+        },
         {
           "version": "1.1.0",
           "date": "2026-11-24",
