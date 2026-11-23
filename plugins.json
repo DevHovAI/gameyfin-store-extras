@@ -24,6 +24,13 @@
       ],
       "releases": [
         {
+          "version": "1.1.0",
+          "date": "2026-11-24",
+          "requires": ">=2.7.0",
+          "url": "https://github.com/DevHovAI/gameyfin-store-extras/releases/download/v1.1.0/gameyfin-store-extras-1.1.0.jar",
+          "sha512sum": "f39a27c8dcdbb22d7b713741a4d920aa018773818920f07f6a6229d3bc482d8129b014c16fb8c9e6baa2b8c8ae3f41e278541b7373d6be04d56483e3b6ddf704"
+        },
+        {
           "version": "1.0.1",
           "date": "2026-11-23",
           "requires": ">=2.7.0",
