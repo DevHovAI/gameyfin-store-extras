@@ -26,6 +26,13 @@ are ignored.
 
 ## Install
 
+### From the marketplace (no restart)
+
+Administration -> Plugins -> add `https://github.com/DevHovAI/gameyfin-store-extras` as a marketplace
+source (Gameyfin reads `plugins.json` from this repository), then install **Store Extras** and enable it.
+
+### Manually
+
 1. Download `gameyfin-store-extras-<version>.jar` from the release page.
 2. Copy it into the host folder that is mounted at `/opt/gameyfin/plugins`, then restart Gameyfin.
 3. Administration -> Plugins -> **Store Extras** -> enable it (third-party plugins start disabled).
