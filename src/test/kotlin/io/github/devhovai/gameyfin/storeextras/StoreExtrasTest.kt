@@ -37,6 +37,25 @@ class StoreExtrasTest {
         assertEquals(setOf("Larian Studios"), game.developedBy)
     }
 
+    @Test fun `the Steam 302 on reviews only pauses reviews - search and details are still asked every time`() {
+        val http = FakeHttp(
+            listOf(
+                "storesearch" to fixture("steam_search_bg3.json"),
+                "steampowered.com/api/appdetails" to fixture("steam_details_bg3.json"),
+                "appreviews" to steamReviewsRedirect,
+                "steamspy" to fixture("steamspy_bg3.json"),
+                "catalog.gog.com" to fixture("gog_catalog_bg3.json"),
+                "api.gog.com" to fixture("gog_product_bg3.json"),
+            ),
+            heroBg3,
+        )
+        val e = StoreExtras(SteamClient(http), GogClient(http))
+        repeat(2) { assertEquals("1086940", e.fetchByTitle("Baldur's Gate 3", emptySet(), 1).single().originalId) }
+        assertEquals(1, http.requested.count { it.contains("appreviews") })
+        assertEquals(2, http.requested.count { it.contains("storesearch") })
+        assertEquals(2, http.requested.count { it.contains("steampowered.com/api/appdetails") })
+    }
+
     @Test fun `Project Zomboid has no critic score but still a rating and trailers`() {
         val e = extras(
             "storesearch" to fixture("steam_search_zomboid.json"),
