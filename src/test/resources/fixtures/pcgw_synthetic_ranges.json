@@ -1,0 +1,7 @@
+{
+ "parse": {
+  "title": "Synthetic Ranges",
+  "pageid": 1,
+  "wikitext": "{{Infobox game\n|steam appid  = 424242\n|gogcom id    = 1234567890\n}}\n{{Network/Multiplayer\n|local play           = true\n|local play players   = 2-4\n|local play modes     = Co-op, Versus\n|lan play             = true\n|lan play players     = unknown\n|lan play modes       = Co-op\n|online play          = true\n|online play players  = 2 \u2013 16\n|online play modes    =\n|asynchronous         =\n}}\n"
+ }
+}

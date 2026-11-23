@@ -1,0 +1,7 @@
+{
+ "parse": {
+  "title": "Baldur's Gate 3",
+  "pageid": 138197,
+  "wikitext": "{{Infobox game\n|steam appid  = 1086940\n|gogcom id    = 1456460669\n}}\n{{Network/Multiplayer\n|local play           = true\n|local play players   = 2\n|local play modes     = Co-op \n|lan play             = true\n|lan play players     = 4\n|lan play modes       = Co-op\n|online play          = true\n|online play players  = 4\n|online play modes    = Co-op\n}}\n"
+ }
+}

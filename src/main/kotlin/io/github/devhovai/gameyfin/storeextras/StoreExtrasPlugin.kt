@@ -19,7 +19,7 @@ class StoreExtrasPlugin(context: PluginContext) : GameyfinPlugin(context) {
     class StoreExtrasMetadataProvider : GameMetadataProvider {
         private val log = LoggerFactory.getLogger(javaClass)
         private val http = JdkHttpFetcher()
-        private val extras = StoreExtras(SteamClient(http), GogClient(http))
+        private val extras = StoreExtras(SteamClient(http), GogClient(http), PcgwClient(http))
 
         override val supportedPlatforms: Set<Platform> =
             setOf(Platform.PC_MICROSOFT_WINDOWS, Platform.LINUX, Platform.MAC)
