@@ -21,7 +21,24 @@
    "release_date": {
     "coming_soon": false,
     "date": "22 Apr, 2024"
-   }
+   },
+   "categories": [
+    {
+     "id": 2,
+     "description": "Single-player"
+    },
+    {
+     "id": 1,
+     "description": "Multi-player"
+    },
+    {
+     "id": 9,
+     "description": "Co-op"
+    }
+   ],
+   "short_description": "Experience the classic gameplay of 1503 A.D.: The New World, optimized for current computers with resolutions up to 4K.",
+   "detailed_description": "Dive into the classic gameplay and long-lost multiplayer mode with the Anno 1503 and its expansion Treasures, Monsters &amp; Pirates in this History Edition, updated and optimized to work smoothly on current computers.<br />\r\n<br />\r\nThe Treasures, Monsters &amp; Pirates expansion for Anno 1503 features exciting new single-player scenarios and sandbox games, new buildings and animals as well as gameplay improvements.<br />\r\n<br />\r\nYour cities look better than ever, thanks to resolutions all the way up to 4k.<br />\r\nDiscover Anno 1503’s long-lost multiplayer, released officially for the first time!<br />\r\nEnjoy all improvements while continuing your existing game, thanks to full save compatibility.<br />\r\nTake advantage of improvements like borderless window mode and improved scrolling.<br />\r\n<br />\r\nThis edition also offers bonus content includes soundtrack and a wallpaper, as well as a company logo for Anno 1800.",
+   "about_the_game": "Dive into the classic gameplay and long-lost multiplayer mode with the Anno 1503 and its expansion Treasures, Monsters &amp; Pirates in this History Edition, updated and optimized to work smoothly on current computers.<br />\r\n<br />\r\nThe Treasures, Monsters &amp; Pirates expansion for Anno 1503 features exciting new single-player scenarios and sandbox games, new buildings and animals as well as gameplay improvements.<br />\r\n<br />\r\nYour cities look better than ever, thanks to resolutions all the way up to 4k.<br />\r\nDiscover Anno 1503’s long-lost multiplayer, released officially for the first time!<br />\r\nEnjoy all improvements while continuing your existing game, thanks to full save compatibility.<br />\r\nTake advantage of improvements like borderless window mode and improved scrolling.<br />\r\n<br />\r\nThis edition also offers bonus content includes soundtrack and a wallpaper, as well as a company logo for Anno 1800."
   }
  }
 }

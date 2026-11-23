@@ -1,8 +1,8 @@
-Plugin-Version: 1.0.1
+Plugin-Version: 1.1.0
 Plugin-Class: io.github.devhovai.gameyfin.storeextras.StoreExtrasPlugin
 Plugin-Id: io.github.devhovai.gameyfin.plugins.metadata.storeextras
 Plugin-Name: Store Extras
-Plugin-Description: Adds Steam user rating, Metacritic score, banners and trailers (GOG fallback)
+Plugin-Description: Adds description with rating badges, features, user rating, Metacritic score, banners and trailers from Steam and GOG
 Plugin-Author: DevHovAI
 Plugin-License: AGPL-3.0
 Plugin-Requires: >=2.7.0

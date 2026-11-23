@@ -28,7 +28,7 @@ class GogClientTest {
 
     @Test fun `youtube embed links become watch links`() {
         val gog = GogClient(FakeHttp(listOf("api.gog.com" to fixture("gog_product_bg3.json"))))
-        val videos = gog.videos("1456460669")
+        val videos = gog.details("1456460669").videos
         assertEquals("https://www.youtube.com/watch?v=xg53H-H2gqk", videos.first())
     }
 }

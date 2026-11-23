@@ -37,6 +37,10 @@ data class SteamApp(
     val metacritic: Int?,
     val movies: List<SteamMovie>,
     val release: Instant?,
+    val categories: Set<Int> = emptySet(),
+    val metacriticUrl: String? = null,
+    /** Store page text as HTML: `detailed_description`, else `about_the_game`, else `short_description`. */
+    val descriptionHtml: String? = null,
 )
 
 data class ReviewCounts(val positive: Long, val negative: Long, val source: String) {
@@ -45,6 +49,24 @@ data class ReviewCounts(val positive: Long, val negative: Long, val source: Stri
     /** Share of positive reviews as 0..100, or null when there are too few votes to mean anything. */
     fun percent(minVotes: Long = MIN_VOTES): Int? =
         if (total < minVotes) null else Math.round(100.0 * positive / total).toInt()
+
+    /** Steam's label for the score ("Very Positive"), derived the way the store does it; null when there are too few votes. */
+    fun sentiment(): String? {
+        val percent = percent() ?: return null
+        val many = total >= 500
+        val some = total >= 50
+        return when {
+            percent >= 95 && many -> "Overwhelmingly Positive"
+            percent >= 80 && some -> "Very Positive"
+            percent >= 80 -> "Positive"
+            percent >= 70 -> "Mostly Positive"
+            percent >= 40 -> "Mixed"
+            percent >= 20 -> "Mostly Negative"
+            many -> "Overwhelmingly Negative"
+            some -> "Very Negative"
+            else -> "Negative"
+        }
+    }
 
     companion object {
         const val MIN_VOTES = 10L
@@ -69,8 +91,8 @@ class SteamClient(
     private val http: HttpFetcher,
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
-    @Volatile
-    private var reviewsBlockedUntil = 0L
+    /** Only ever consulted before the `appreviews` endpoint; search, appdetails and the rest never look at it. */
+    private val reviewsCooldown = Cooldown(clock)
 
     fun search(term: String): List<SteamHit> {
         val res = http.get("https://store.steampowered.com/api/storesearch?term=${enc(term)}&cc=en&l=en") ?: return emptyList()
@@ -118,6 +140,10 @@ class SteamClient(
             metacritic = d["metacritic"].obj()?.get("score").int(),
             movies = movies,
             release = ReleaseDates.parseSteam(d["release_date"].obj()?.get("date").str()),
+            categories = d["categories"].arr()?.mapNotNull { it.obj()?.get("id").int() }?.toSet() ?: emptySet(),
+            metacriticUrl = d["metacritic"].obj()?.get("url").str()?.substringBefore('?')?.takeIf { it.startsWith("https://") },
+            descriptionHtml = listOf("detailed_description", "about_the_game", "short_description")
+                .firstNotNullOfOrNull { key -> d[key].str()?.takeIf { it.isNotBlank() } },
         )
     }
 
@@ -133,13 +159,13 @@ class SteamClient(
     fun reviews(appId: Int): ReviewCounts? = steamReviews(appId) ?: steamSpyReviews(appId)
 
     private fun steamReviews(appId: Int): ReviewCounts? {
-        if (clock() < reviewsBlockedUntil) return null
+        if (reviewsCooldown.active) return null
         val res = http.get("https://store.steampowered.com/appreviews/$appId?json=1&language=all&purchase_type=all&num_per_page=0")
         val summary = res?.takeIf { it.ok }?.let { parseObject(it.body) }?.get("query_summary").obj()
         val positive = summary?.get("total_positive").long()
         val negative = summary?.get("total_negative").long()
         if (positive == null || negative == null) {
-            reviewsBlockedUntil = clock() + BLOCK_MILLIS
+            reviewsCooldown.start()
             return null
         }
         return ReviewCounts(positive, negative, "steam")
@@ -153,7 +179,25 @@ class SteamClient(
         return ReviewCounts(positive, negative, "steamspy")
     }
 
+    /** True when the Steam Deck compatibility report lists the game as "Verified". */
+    fun deckVerified(appId: Int): Boolean {
+        val res = http.get("https://store.steampowered.com/saleaction/ajaxgetdeckappcompatibilityreport?nAppID=$appId")?.takeIf { it.ok }
+        return parseObject(res?.body ?: return false)?.get("results").obj()?.get("resolved_category").int() == DECK_VERIFIED
+    }
+
     private companion object {
-        const val BLOCK_MILLIS = 60 * 60 * 1000L
+        const val DECK_VERIFIED = 3
+    }
+}
+
+/** A one-shot pause: [start] makes [active] true for [millis] on the given clock. */
+class Cooldown(private val clock: () -> Long, private val millis: Long = 60 * 60 * 1000L) {
+    @Volatile
+    private var until = 0L
+
+    val active: Boolean get() = clock() < until
+
+    fun start() {
+        until = clock() + millis
     }
 }

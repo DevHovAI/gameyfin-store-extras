@@ -3,8 +3,8 @@
     {
       "id": "io.github.devhovai.gameyfin.plugins.metadata.storeextras",
       "name": "Store Extras",
-      "shortDescription": "Adds Steam user rating, Metacritic score, banners and trailers, with GOG as fallback.",
-      "description": "Metadata provider that fills the fields other providers leave empty: user rating (Steam reviews, SteamSpy fallback), critic rating (Metacritic via Steam), header/banner images (Steam library hero, then header) and up to four trailers. GOG is used when Steam does not know a title or a field is missing.\n\nPut it at the top of the metadata priority list; it only returns rating, banner and trailer fields, so other providers keep supplying everything else.",
+      "shortDescription": "Adds a description with rating badges, features, Steam/GOG ratings, Metacritic, banners and trailers.",
+      "description": "Metadata provider built on the Steam and GOG stores: description (Markdown, with a line of Steam/GOG/Metacritic/Steam Deck/game-mode badges on top), features (from Steam categories), user rating (Steam reviews, SteamSpy fallback), critic rating (Metacritic via Steam), header/banner images (Steam library hero, then header) and up to four trailers. GOG covers titles Steam does not sell.\n\nPut it at the top of the metadata priority list so that it wins those fields; other providers keep supplying covers, screenshots, genres and the rest.",
       "provider": "DevHovAI",
       "license": "AGPL-3.0",
       "projectUrl": "https://github.com/DevHovAI/gameyfin-store-extras",
@@ -18,7 +18,9 @@
         "gog",
         "ratings",
         "trailers",
-        "artwork"
+        "artwork",
+        "description",
+        "features"
       ],
       "releases": [
         {

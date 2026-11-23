@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory
 class StoreExtrasPlugin(context: PluginContext) : GameyfinPlugin(context) {
 
     /**
-     * Supplies user rating, critic score, banner images and trailers only. Enable it next to a full metadata
-     * provider (IGDB, Steam) and order it so that it wins for those fields.
+     * Supplies description (Markdown with badges), features, user rating, critic score, banner images and trailers.
+     * Order it first so that it wins those fields; other providers keep supplying covers, screenshots, genres, etc.
      */
     @Suppress("Unused")
     @Extension(ordinal = 5)

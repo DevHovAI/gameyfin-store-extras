@@ -71,4 +71,45 @@ class SteamClientTest {
         val some = SteamClient(FakeHttp(emptyList(), existing = setOf("apps/1/library_hero.jpg")))
         assertTrue(some.heroUrl(1)!!.endsWith("/apps/1/library_hero.jpg"))
     }
+
+    @Test fun `sentiment follows Steam's scale`() {
+        assertEquals("Overwhelmingly Positive", ReviewCounts(970, 30, "steam").sentiment())
+        assertEquals("Very Positive", ReviewCounts(96, 4, "steam").sentiment())
+        assertEquals("Very Positive", ReviewCounts(9000, 1000, "steam").sentiment())
+        assertEquals("Positive", ReviewCounts(18, 2, "steam").sentiment())
+        assertEquals("Mostly Positive", ReviewCounts(75, 25, "steam").sentiment())
+        assertEquals("Mixed", ReviewCounts(50, 50, "steam").sentiment())
+        assertEquals("Mostly Negative", ReviewCounts(30, 70, "steam").sentiment())
+        assertEquals("Negative", ReviewCounts(2, 18, "steam").sentiment())
+        assertEquals("Very Negative", ReviewCounts(5, 95, "steam").sentiment())
+        assertNull(ReviewCounts(5, 1, "steam").sentiment())
+    }
+
+    @Test fun `the cooldown lasts an hour and is independent of other requests`() {
+        var now = 0L
+        val cooldown = Cooldown({ now })
+        assertEquals(false, cooldown.active)
+        cooldown.start()
+        assertEquals(true, cooldown.active)
+        now = 59 * 60 * 1000L
+        assertEquals(true, cooldown.active)
+        now = 60 * 60 * 1000L
+        assertEquals(false, cooldown.active)
+    }
+
+    @Test fun `details carry categories, Metacritic link and the store text`() {
+        val steam = SteamClient(FakeHttp(listOf("steampowered.com/api/appdetails" to fixture("steam_details_bg3.json"))))
+        val app = assertNotNull(steam.details(1086940))
+        assertTrue(2 in app.categories && 38 in app.categories && 28 in app.categories)
+        assertEquals("https://www.metacritic.com/game/pc/baldurs-gate-3", app.metacriticUrl)
+        assertTrue(app.descriptionHtml!!.contains("Forgotten Realms"))
+    }
+
+    @Test fun `deck report only counts category 3 as verified`() {
+        val verified = SteamClient(FakeHttp(listOf("ajaxgetdeckappcompatibilityreport" to fixture("steam_deck_verified.json"))))
+        assertTrue(verified.deckVerified(1))
+        val playable = SteamClient(FakeHttp(listOf("ajaxgetdeckappcompatibilityreport" to HttpResult(200, """{"success":1,"results":{"resolved_category":2}}"""))))
+        assertEquals(false, playable.deckVerified(1))
+        assertEquals(false, SteamClient(FakeHttp(emptyList())).deckVerified(1))
+    }
 }

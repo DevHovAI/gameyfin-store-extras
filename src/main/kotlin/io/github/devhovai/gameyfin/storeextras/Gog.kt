@@ -16,11 +16,18 @@ data class GogHit(
     val publishers: Set<String>,
     val platforms: Set<Platform>,
     val release: Instant? = null,
+    val storeLink: String? = null,
+    val features: Set<String> = emptySet(),
 ) {
+    /** GOG's 0..50 score, or null when there are too few reviews for it to mean anything. */
+    val badgeRating: Int? get() = reviewsRating.takeIf { userRating() != null }
+
     /** 0..100, or null when GOG has no rating or too few reviews. */
     fun userRating(): Int? =
         reviewsRating?.takeIf { it > 0 && (reviewsCount ?: 0) >= ReviewCounts.MIN_VOTES }?.let { (it * 2).coerceIn(0, 100) }
 }
+
+data class GogDetails(val videos: List<String> = emptyList(), val descriptionHtml: String? = null)
 
 class GogClient(private val http: HttpFetcher) {
 
@@ -41,6 +48,8 @@ class GogClient(private val http: HttpFetcher) {
                 developers = o["developers"].strings(),
                 publishers = o["publishers"].strings(),
                 release = ReleaseDates.parseGog(o["releaseDate"].str()),
+                storeLink = o["storeLink"].str()?.takeIf { it.startsWith("https://www.gog.com/") },
+                features = o["features"].arr()?.mapNotNull { it.obj()?.let { f -> f["slug"].str() ?: f["name"].str() } }?.toSet() ?: emptySet(),
                 platforms = o["operatingSystems"].strings().mapNotNull {
                     when (it.lowercase()) {
                         "windows" -> Platform.PC_MICROSOFT_WINDOWS
@@ -53,11 +62,14 @@ class GogClient(private val http: HttpFetcher) {
         }
     }
 
-    /** Trailer links GOG lists for a product. They are YouTube links, which Gameyfin's player supports. */
-    fun videos(id: String): List<String> {
-        val res = http.get("https://api.gog.com/products/${enc(id)}?expand=videos")?.takeIf { it.ok } ?: return emptyList()
-        val videos = parseObject(res.body)?.get("videos").arr() ?: return emptyList()
-        return videos.mapNotNull { v -> v.obj()?.get("video_url").str()?.let(::normalizeVideoUrl) }
+    /** Trailers (YouTube links, which Gameyfin's player supports) and the store description of a product. */
+    fun details(id: String): GogDetails {
+        val res = http.get("https://api.gog.com/products/${enc(id)}?expand=videos,description")?.takeIf { it.ok } ?: return GogDetails()
+        val root = parseObject(res.body) ?: return GogDetails()
+        val videos = root["videos"].arr()?.mapNotNull { v -> v.obj()?.get("video_url").str()?.let(::normalizeVideoUrl) } ?: emptyList()
+        val description = root["description"].obj()
+        val html = description?.get("full").str()?.takeIf { it.isNotBlank() } ?: description?.get("lead").str()?.takeIf { it.isNotBlank() }
+        return GogDetails(videos, html)
     }
 
     /** Title of a product, used to resolve a stored GOG id back to a catalog entry. */
