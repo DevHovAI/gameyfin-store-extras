@@ -1,0 +1,31 @@
+{
+ "id": 1456460669,
+ "title": "Baldur's Gate 3",
+ "videos": [
+  {
+   "video_url": "https://www.youtube.com/embed/xg53H-H2gqk?wmode=opaque&rel=0",
+   "thumbnail_url": "https://img.youtube.com/vi/xg53H-H2gqk/hqdefault.jpg",
+   "provider": "youtube"
+  },
+  {
+   "video_url": "https://www.youtube.com/embed/w0abETFbem8?wmode=opaque&rel=0",
+   "thumbnail_url": "https://img.youtube.com/vi/w0abETFbem8/hqdefault.jpg",
+   "provider": "youtube"
+  },
+  {
+   "video_url": "https://www.youtube.com/embed/7QLKvBPt8NE?wmode=opaque&rel=0",
+   "thumbnail_url": "https://img.youtube.com/vi/7QLKvBPt8NE/hqdefault.jpg",
+   "provider": "youtube"
+  },
+  {
+   "video_url": "https://www.youtube.com/embed/0r2b82ZG6rs?wmode=opaque&rel=0",
+   "thumbnail_url": "https://img.youtube.com/vi/0r2b82ZG6rs/hqdefault.jpg",
+   "provider": "youtube"
+  },
+  {
+   "video_url": "https://www.youtube.com/embed/yYkt2sNE4Wc?wmode=opaque&rel=0",
+   "thumbnail_url": "https://img.youtube.com/vi/yYkt2sNE4Wc/hqdefault.jpg",
+   "provider": "youtube"
+  }
+ ]
+}
