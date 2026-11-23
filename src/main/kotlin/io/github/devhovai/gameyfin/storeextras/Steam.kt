@@ -10,6 +10,7 @@ import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
 import org.gameyfin.pluginapi.gamemetadata.Platform
 import java.net.URLEncoder
+import java.time.Instant
 import java.nio.charset.StandardCharsets
 
 data class SteamHit(val id: Int, val name: String)
@@ -35,6 +36,7 @@ data class SteamApp(
     val headerImage: String?,
     val metacritic: Int?,
     val movies: List<SteamMovie>,
+    val release: Instant?,
 )
 
 data class ReviewCounts(val positive: Long, val negative: Long, val source: String) {
@@ -115,6 +117,7 @@ class SteamClient(
             headerImage = d["header_image"].str(),
             metacritic = d["metacritic"].obj()?.get("score").int(),
             movies = movies,
+            release = ReleaseDates.parseSteam(d["release_date"].obj()?.get("date").str()),
         )
     }
 
