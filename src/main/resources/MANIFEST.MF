@@ -1,4 +1,4 @@
-Plugin-Version: 1.0.0
+Plugin-Version: 1.0.1
 Plugin-Class: io.github.devhovai.gameyfin.storeextras.StoreExtrasPlugin
 Plugin-Id: io.github.devhovai.gameyfin.plugins.metadata.storeextras
 Plugin-Name: Store Extras

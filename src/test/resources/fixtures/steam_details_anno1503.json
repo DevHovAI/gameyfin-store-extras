@@ -1,0 +1,27 @@
+{
+ "2820110": {
+  "success": true,
+  "data": {
+   "type": "game",
+   "name": "Anno 1503 History Edition",
+   "steam_appid": 2820110,
+   "is_free": false,
+   "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2820110/header.jpg?t=1713805153",
+   "developers": [
+    "Ubisoft Mainz"
+   ],
+   "publishers": [
+    "Ubisoft"
+   ],
+   "platforms": {
+    "windows": true,
+    "mac": false,
+    "linux": false
+   },
+   "release_date": {
+    "coming_soon": false,
+    "date": "22 Apr, 2024"
+   }
+  }
+ }
+}

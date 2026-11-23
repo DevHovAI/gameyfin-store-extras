@@ -6,7 +6,8 @@ import java.net.URI
 
 /**
  * Builds [GameMetadata] that only carries what other providers are missing: user rating, critic score,
- * banner images and trailers. Steam is the primary source, GOG fills gaps and covers titles Steam does not sell.
+ * banner images and trailers. Title, platforms and release date are always set as well: Gameyfin groups results of
+ * all providers by normalized title and release year, and without them this provider's result never merges. Steam is the primary source, GOG fills gaps and covers titles Steam does not sell.
  */
 class StoreExtras(private val steam: SteamClient, private val gog: GogClient) {
 
@@ -50,6 +51,7 @@ class StoreExtras(private val steam: SteamClient, private val gog: GogClient) {
             title = app.name.filterNot { it in "™©®" }.trim(),
             platforms = platforms.ifEmpty { null },
             headerUrls = headers.ifEmpty { null },
+            release = app.release,
             userRating = steam.reviews(appId)?.percent(),
             criticRating = app.metacritic?.takeIf { it in 1..100 },
             developedBy = app.developers.ifEmpty { null },
@@ -67,6 +69,7 @@ class StoreExtras(private val steam: SteamClient, private val gog: GogClient) {
             title = hit.title,
             platforms = platforms.ifEmpty { null },
             headerUrls = headers.ifEmpty { null },
+            release = hit.release,
             userRating = hit.userRating(),
             developedBy = hit.developers.ifEmpty { null },
             publishedBy = hit.publishers.ifEmpty { null },
@@ -81,6 +84,7 @@ class StoreExtras(private val steam: SteamClient, private val gog: GogClient) {
         val other = fromGog(hit, emptySet())
         return base.copy(
             userRating = base.userRating ?: other.userRating,
+            release = base.release ?: other.release,
             headerUrls = base.headerUrls ?: other.headerUrls,
             videoUrls = base.videoUrls ?: other.videoUrls,
         )

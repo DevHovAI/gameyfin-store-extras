@@ -1,6 +1,7 @@
 package io.github.devhovai.gameyfin.storeextras
 
 import org.gameyfin.pluginapi.gamemetadata.Platform
+import java.time.Instant
 
 data class GogHit(
     val id: String,
@@ -14,6 +15,7 @@ data class GogHit(
     val developers: Set<String>,
     val publishers: Set<String>,
     val platforms: Set<Platform>,
+    val release: Instant? = null,
 ) {
     /** 0..100, or null when GOG has no rating or too few reviews. */
     fun userRating(): Int? =
@@ -38,6 +40,7 @@ class GogClient(private val http: HttpFetcher) {
                 background = o["galaxyBackgroundImage"].str(),
                 developers = o["developers"].strings(),
                 publishers = o["publishers"].strings(),
+                release = ReleaseDates.parseGog(o["releaseDate"].str()),
                 platforms = o["operatingSystems"].strings().mapNotNull {
                     when (it.lowercase()) {
                         "windows" -> Platform.PC_MICROSOFT_WINDOWS
