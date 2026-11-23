@@ -1,11 +1,11 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import java.util.jar.Manifest
+import java.util.zip.ZipFile
 
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    id("com.google.devtools.ksp")
 }
 
 group = "io.github.devhovai.gameyfin"
@@ -37,7 +37,6 @@ dependencies {
     // Provided by the Gameyfin host at runtime.
     compileOnly(kotlin("stdlib"))
     compileOnly("org.gameyfin:plugin-api:$pluginApiVersion")
-    ksp("care.better.pf4j:pf4j-kotlin-symbol-processing:${property("pf4jKspVersion")}")
 
     // Bundled into the plugin JAR.
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${property("serializationJsonVersion")}") {
@@ -59,14 +58,22 @@ tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     isZip64 = true
     archiveBaseName.set("gameyfin-store-extras")
-    dependsOn("kspKotlin")
     manifest { from("src/main/resources/MANIFEST.MF") }
     from(configurations.runtimeClasspath.get().map { zipTree(it) }) {
         exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "META-INF/*.EC", "META-INF/MANIFEST.MF")
     }
-    from(layout.buildDirectory.dir("generated/ksp/main/resources"))
     from("src/main/resources") {
         include("logo.*")
         into("META-INF/resources")
+    }
+}
+
+// The extension index must be inside the JAR, or Gameyfin shows the plugin as running but never calls it.
+// It is a checked-in resource (not generated), so a cached or incremental build can never drop it.
+tasks.jar {
+    doLast {
+        val jar = archiveFile.get().asFile
+        val index = ZipFile(jar).use { it.getEntry("META-INF/extensions.idx") }
+        check(index != null) { "$jar has no META-INF/extensions.idx" }
     }
 }
