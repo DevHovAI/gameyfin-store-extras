@@ -33,7 +33,9 @@ class StoreExtrasTest {
         val headers = game.headerUrls!!.toList()
         assertTrue(headers.first().toString().endsWith("/apps/1086940/library_hero.jpg"))
         assertTrue(headers.last().toString().contains("header.jpg"))
-        assertTrue(game.videoUrls!!.all { it.toString().contains(".m3u8") })
+        // YouTube trailers from GOG come first: Gameyfin's player only shows a preview thumbnail for those.
+        assertTrue(game.videoUrls!!.all { it.host == "www.youtube.com" })
+        assertEquals("https://www.youtube.com/watch?v=xg53H-H2gqk", game.videoUrls!!.first().toString())
         assertEquals(setOf("Larian Studios"), game.developedBy)
     }
 
@@ -124,5 +126,86 @@ class StoreExtrasTest {
         assertTrue(game.videoUrls!!.all { it.scheme == "https" && it.host.isNotBlank() })
         assertTrue(game.videoUrls!!.size <= StoreExtras.MAX_VIDEOS)
         assertTrue(URI("https://www.youtube.com/watch?v=xg53H-H2gqk").host.isNotBlank())
+    }
+
+    private fun withGog(steamSearch: String, steamDetails: String, gogId: String, title: String, gogProduct: HttpResult) = extras(
+        "storesearch" to fixture(steamSearch),
+        "steampowered.com/api/appdetails" to fixture(steamDetails),
+        "appreviews" to steamReviewsRedirect,
+        "steamspy" to fixture("steamspy_zomboid.json"),
+        "catalog.gog.com" to HttpResult(200, """{"products":[{"id":"$gogId","title":"$title","productType":"game"}]}"""),
+        "api.gog.com" to gogProduct,
+    )
+
+    @Test fun `Project Zomboid prefers the GOG YouTube trailer over Steam files and non-YouTube GOG videos`() {
+        val game = withGog("steam_search_zomboid.json", "steam_details_zomboid.json", "1453298883", "Project Zomboid", fixture("gog_product_zomboid.json"))
+            .fetchByTitle("Project Zomboid", emptySet(), 1).single()
+        assertEquals(listOf("https://www.youtube.com/watch?v=7PNgXuDzNms"), game.videoUrls!!.map { it.toString() })
+    }
+
+    @Test fun `Steam trailers are used only when no YouTube trailer exists`() {
+        val game = withGog("steam_search_zomboid.json", "steam_details_zomboid.json", "1453298883", "Project Zomboid", HttpResult(200, """{"videos":[]}"""))
+            .fetchByTitle("Project Zomboid", emptySet(), 1).single()
+        assertTrue(game.videoUrls!!.isNotEmpty())
+        assertTrue(game.videoUrls!!.none { it.host.contains("youtube") })
+        assertTrue(game.videoUrls!!.size <= StoreExtras.MAX_VIDEOS)
+    }
+
+    @Test fun `GOG-only video links that are not YouTube rank behind Steam trailers`() {
+        val wistia = HttpResult(200, """{"videos":[{"video_url":"https://fast.wistia.net/embed/iframe/abc"}]}""")
+        val game = withGog("steam_search_zomboid.json", "steam_details_zomboid.json", "1453298883", "Project Zomboid", wistia)
+            .fetchByTitle("Project Zomboid", emptySet(), 1).single()
+        assertTrue(game.videoUrls!!.first().toString().contains("steamstatic"))
+    }
+
+    @Test fun `GOG-only titles list YouTube trailers first and at most four`() {
+        val many = HttpResult(
+            200,
+            """{"videos":[{"video_url":"https://fast.wistia.net/embed/iframe/abc"}""" +
+                (1..5).joinToString("") { """,{"video_url":"https://www.youtube.com/embed/aaaaaaaaaa$it"}""" } + "]}",
+        )
+        val e = extras(
+            "storesearch" to fixture("steam_search_empty.json"),
+            "catalog.gog.com" to fixture("gog_catalog_anno1503.json"),
+            "api.gog.com" to many,
+        )
+        val urls = e.fetchByTitle("Anno 1503", emptySet(), 1).single().videoUrls!!.map { it.toString() }
+        assertEquals(4, urls.size)
+        assertTrue(urls.all { it.startsWith("https://www.youtube.com/watch?v=aaaaaaaaaa") })
+    }
+
+    @Test fun `the other three games from the wish list get a GOG YouTube trailer`() {
+        val cases = listOf(
+            Triple("Follow the meaning", "2011876443", "gog_product_follow_the_meaning.json"),
+            Triple("Workers & Resources: Soviet Republic", "1860281269", "gog_product_workers_resources.json"),
+            Triple("Sandustry", "1529745071", "gog_product_sandustry.json"),
+        )
+        for ((title, gogId, file) in cases) {
+            val e = extras(
+                "storesearch" to HttpResult(200, """{"total":1,"items":[{"type":"app","id":999,"name":"$title"}]}"""),
+                "steampowered.com/api/appdetails" to HttpResult(200, """{"999":{"success":true,"data":{"type":"game","name":"$title","steam_appid":999,"movies":[{"id":1,"name":"t","hls_h264":"https://x/a.m3u8"}]}}}"""),
+                "appreviews" to steamReviewsRedirect,
+                "catalog.gog.com" to HttpResult(200, """{"products":[{"id":"$gogId","title":"$title","productType":"game"}]}"""),
+                "api.gog.com" to fixture(file),
+            )
+            val urls = e.fetchByTitle(title, emptySet(), 1).single().videoUrls!!.map { it.toString() }
+            assertTrue(urls.isNotEmpty() && urls.all { it.startsWith("https://www.youtube.com/watch?v=") }, "$title: $urls")
+        }
+    }
+
+    @Test fun `a YouTube reference inside Steam's own movie entry is used too`() {
+        val e = extras(
+            "storesearch" to HttpResult(200, """{"total":1,"items":[{"type":"app","id":999,"name":"Foo Game"}]}"""),
+            "steampowered.com/api/appdetails" to HttpResult(
+                200,
+                """{"999":{"success":true,"data":{"type":"game","name":"Foo Game","steam_appid":999,"movies":[
+                    {"id":1,"name":"a","hls_h264":"https://x/a.m3u8"},
+                    {"id":2,"name":"b","hls_h264":"https://x/b.m3u8","youtube":"https://www.youtube.com/embed/abcdefghijk"}]}}}""",
+            ),
+            "appreviews" to steamReviewsRedirect,
+            "catalog.gog.com" to HttpResult(200, """{"products":[]}"""),
+        )
+        val urls = e.fetchByTitle("Foo Game", emptySet(), 1).single().videoUrls!!.map { it.toString() }
+        assertEquals(listOf("https://www.youtube.com/watch?v=abcdefghijk"), urls)
     }
 }

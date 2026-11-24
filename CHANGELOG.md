@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.0
+
+- Change: trailers are now ordered YouTube first. Gameyfin's player (react-player in `light` mode) can only show a
+  preview thumbnail for YouTube and Vimeo links; for Steam's HLS/DASH/mp4 files it showed an empty placeholder
+  before playback. `videoUrls` now holds up to four YouTube trailers (GOG's trailer list, plus YouTube links in
+  Steam's movie list if there are any), and Steam's own trailers only when no YouTube trailer exists.
+  GOG videos hosted elsewhere (e.g. Wistia) are ignored while a YouTube trailer is available.
+- GOG's trailers are now looked up for every confident GOG match, not only when Steam had none.
+- Everything else is unchanged from 1.2.0.
+
 ## 1.2.0
 
 - New: player counts as badges, from PCGamingWiki. For every mode the wiki lists as available, the description's badge
