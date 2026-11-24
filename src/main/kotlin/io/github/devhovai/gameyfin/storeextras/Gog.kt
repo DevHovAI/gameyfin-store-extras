@@ -77,9 +77,22 @@ class GogClient(private val http: HttpFetcher) {
         http.get("https://api.gog.com/products/${enc(id)}")?.takeIf { it.ok }?.let { parseObject(it.body) }?.get("title").str()
 
     companion object {
-        private val embed = Regex("^https?://(?:www\\.)?youtube(?:-nocookie)?\\.com/embed/([\\w-]{11}).*$")
-
-        fun normalizeVideoUrl(url: String): String =
-            embed.matchEntire(url)?.let { "https://www.youtube.com/watch?v=${it.groupValues[1]}" } ?: url
+        fun normalizeVideoUrl(url: String): String = YouTube.watchUrl(url) ?: url
     }
+}
+
+/**
+ * Gameyfin shows videos with react-player in `light` mode, which only fetches a preview thumbnail for YouTube and
+ * Vimeo. Everything else (Steam's HLS/DASH/mp4 files) gets an empty placeholder, so YouTube links are preferred.
+ */
+object YouTube {
+    private val link = Regex(
+        "^https?://(?:www\\.|m\\.)?(?:youtube(?:-nocookie)?\\.com/(?:embed/|watch\\?(?:[^#]*&)?v=)|youtu\\.be/)([\\w-]{11})(?:[?&#/].*)?$",
+    )
+
+    /** Canonical `https://www.youtube.com/watch?v=<id>` for any YouTube embed/watch/short link, else null. */
+    fun watchUrl(url: String): String? =
+        link.matchEntire(url.trim())?.let { "https://www.youtube.com/watch?v=${it.groupValues[1]}" }
+
+    fun isYouTube(url: String): Boolean = watchUrl(url) != null
 }

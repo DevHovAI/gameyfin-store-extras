@@ -44,14 +44,17 @@ class StoreExtras(private val steam: SteamClient, private val gog: GogClient, pr
         val headers = LinkedHashSet<URI>()
         steam.heroUrl(appId)?.let { headers += URI(it) }
         app.headerImage?.let { headers += URI(it) }
-        val videos = app.movies.mapNotNull { it.bestUrl }.take(MAX_VIDEOS).map(::URI).toCollection(LinkedHashSet())
         val title = app.name.filterNot { it in "™©®" }.trim()
         val reviews = steam.reviews(appId)
         val confident = match >= CONFIDENT
 
         val other = TitleMatcher.best(title, gogHits(title), 1) { it.title }.firstOrNull()
             ?.takeIf { TitleMatcher.score(title, it.title) >= CONFIDENT }
-        val gogDetails = other?.takeIf { app.descriptionHtml == null || videos.isEmpty() }?.let { gog.details(it.id) }
+        val gogDetails = other?.let { gog.details(it.id) }
+        val videos = Trailers.pick(
+            youtube = app.movies.mapNotNull { it.youtube } + gogDetails?.videos.orEmpty(),
+            other = app.movies.mapNotNull { it.bestUrl },
+        )
 
         val badges = buildList {
             if (confident) reviews?.percent()?.let { add(Badges.steam(it, reviews.sentiment(), appId)) }
@@ -76,8 +79,7 @@ class StoreExtras(private val steam: SteamClient, private val gog: GogClient, pr
             criticRating = app.metacritic?.takeIf { it in 1..100 },
             developedBy = app.developers.ifEmpty { null },
             publishedBy = app.publishers.ifEmpty { null },
-            videoUrls = videos.ifEmpty { null }
-                ?: gogDetails?.videos?.take(MAX_VIDEOS)?.map(::URI)?.toCollection(LinkedHashSet())?.ifEmpty { null },
+            videoUrls = videos.ifEmpty { null },
             features = features.ifEmpty { null },
         )
     }
@@ -102,7 +104,7 @@ class StoreExtras(private val steam: SteamClient, private val gog: GogClient, pr
             userRating = hit.userRating(),
             developedBy = hit.developers.ifEmpty { null },
             publishedBy = hit.publishers.ifEmpty { null },
-            videoUrls = details.videos.take(MAX_VIDEOS).map(::URI).toCollection(LinkedHashSet()).ifEmpty { null },
+            videoUrls = Trailers.pick(youtube = details.videos, other = emptyList()).ifEmpty { null },
             features = features.ifEmpty { null },
         )
     }
@@ -120,5 +122,14 @@ class StoreExtras(private val steam: SteamClient, private val gog: GogClient, pr
 
         /** Minimum [TitleMatcher.score] for a store to get a badge: "Anno 1503" -> "Anno 1503 History Edition" (84) passes, sequels (<= 70) do not. */
         const val CONFIDENT = 84
+    }
+}
+
+/** Trailer order: YouTube first (Gameyfin's player only shows a preview thumbnail for those), others only as fallback. */
+object Trailers {
+    fun pick(youtube: List<String>, other: List<String>): LinkedHashSet<URI> {
+        val tubes = youtube.mapNotNull(YouTube::watchUrl).distinct()
+        val chosen = tubes.ifEmpty { (other + youtube).distinct() }
+        return chosen.take(StoreExtras.MAX_VIDEOS).map(::URI).toCollection(LinkedHashSet())
     }
 }

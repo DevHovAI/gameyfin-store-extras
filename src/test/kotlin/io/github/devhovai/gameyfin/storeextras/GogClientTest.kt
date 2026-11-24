@@ -31,4 +31,19 @@ class GogClientTest {
         val videos = gog.details("1456460669").videos
         assertEquals("https://www.youtube.com/watch?v=xg53H-H2gqk", videos.first())
     }
+
+    @Test fun `YouTube links of every shape become watch links, others are left alone`() {
+        val id = "xg53H-H2gqk"
+        val watch = "https://www.youtube.com/watch?v=$id"
+        listOf(
+            "https://www.youtube.com/embed/$id?wmode=opaque&rel=0",
+            "https://www.youtube-nocookie.com/embed/$id",
+            "https://youtu.be/$id?t=3",
+            "https://www.youtube.com/watch?feature=share&v=$id",
+            "https://m.youtube.com/watch?v=$id",
+        ).forEach { assertEquals(watch, YouTube.watchUrl(it), it) }
+        assertNull(YouTube.watchUrl("https://fast.wistia.net/embed/iframe/nsk08rna79"))
+        assertNull(YouTube.watchUrl("https://video.akamai.steamstatic.com/a/hls_264_master.m3u8"))
+        assertEquals("https://fast.wistia.net/embed/iframe/x", GogClient.normalizeVideoUrl("https://fast.wistia.net/embed/iframe/x"))
+    }
 }

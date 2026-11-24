@@ -1,0 +1,16 @@
+{
+ "id": 1453298883,
+ "title": "Project Zomboid",
+ "videos": [
+  {
+   "video_url": "https://fast.wistia.net/embed/iframe/nsk08rna79",
+   "thumbnail_url": "https://embed-ssl.wistia.com/deliveries/b936faf5373cfc1986ffeed27a55a24cc3d17168.jpg",
+   "provider": "wistia"
+  },
+  {
+   "video_url": "https://www.youtube.com/embed/7PNgXuDzNms?wmode=opaque&rel=0",
+   "thumbnail_url": "https://img.youtube.com/vi/7PNgXuDzNms/hqdefault.jpg",
+   "provider": "youtube"
+  }
+ ]
+}

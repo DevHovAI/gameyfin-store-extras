@@ -21,9 +21,14 @@ data class SteamMovie(
     val webm: String?,
     val hls: String?,
     val dash: String?,
+    /** A YouTube watch link, if the movie entry references one (Steam's own entries normally do not). */
+    val youtube: String? = null,
 ) {
     /** mp4 plays everywhere; Steam currently only publishes HLS/DASH, which Gameyfin's player handles as well. */
     val bestUrl: String? get() = mp4 ?: webm ?: hls ?: dash
+
+    /** Anything playable: Steam's own file or a YouTube reference. */
+    val hasUrl: Boolean get() = bestUrl != null || youtube != null
 }
 
 data class SteamApp(
@@ -127,7 +132,8 @@ class SteamClient(
                 webm = o["webm"].obj()?.let { it["max"].str() ?: it["480"].str() },
                 hls = o["hls_h264"].str(),
                 dash = o["dash_h264"].str(),
-            ).takeIf { it.bestUrl != null }
+                youtube = youtubeLink(o),
+            ).takeIf { it.hasUrl }
         } ?: emptyList()
         return SteamApp(
             id = appId,
@@ -146,6 +152,10 @@ class SteamClient(
                 .firstNotNullOfOrNull { key -> d[key].str()?.takeIf { it.isNotBlank() } },
         )
     }
+
+    /** First string value anywhere in a movie entry that is a YouTube link, as a watch URL. */
+    private fun youtubeLink(movie: JsonObject): String? =
+        movie.values.firstNotNullOfOrNull { v -> v.str()?.let(YouTube::watchUrl) }
 
     /** True when Steam serves the 1920x620 library hero image for this app (not every app has one). */
     fun heroUrl(appId: Int): String? =

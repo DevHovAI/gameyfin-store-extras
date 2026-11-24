@@ -10,7 +10,7 @@ pages into rich game metadata: a description with rating badges, features, ratin
 | `userRating` (0-100) | Steam reviews (share of positive votes); SteamSpy if Steam's endpoint is blocked; GOG rating as fallback |
 | `criticRating` (0-100) | Metacritic score listed on the Steam store page |
 | `headerUrls` | Steam `library_hero.jpg` (1920x620 banner, if it exists), then `header.jpg`; GOG background/cover as fallback |
-| `videoUrls` | Steam trailers (mp4 or webm if Steam offers them, otherwise HLS, then DASH); GOG trailers (YouTube) as fallback |
+| `videoUrls` | Up to four trailers, YouTube first: GOG's YouTube trailers (and YouTube links in Steam's movie list, if any). Only when there is no YouTube trailer: Steam's own files (mp4 or webm if offered, otherwise HLS, then DASH) |
 | `title`, `release`, `platforms`, `developedBy`, `publishedBy` | as delivered by the same store listing |
 
 It does **not** add store links: the official [Steam Store](https://github.com/gameyfin/plugin-steam-store) and
@@ -94,6 +94,11 @@ source (Gameyfin reads `plugins.json` from this repository), then install **Stor
   affected by that pause.
 - Steam no longer publishes mp4/webm trailers through `appdetails`, only HLS (`.m3u8`) and DASH (`.mpd`).
   Gameyfin's player (react-player) plays both.
+- **Why YouTube trailers come first:** Gameyfin shows videos with react-player in `light` mode, which first shows a
+  preview thumbnail and only loads the video on click. react-player can fetch that thumbnail for YouTube (and Vimeo)
+  links only. For Steam's HLS/DASH/mp4 files it has none, so the player shows an empty placeholder, and Gameyfin has
+  no thumbnail field for videos to fill that gap. Steam trailers are therefore only a fallback for games without a
+  YouTube trailer. GOG lists its trailers as YouTube links, so titles that exist on GOG usually get one.
 
 ## Build
 

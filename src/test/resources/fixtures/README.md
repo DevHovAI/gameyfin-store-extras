@@ -13,3 +13,7 @@ template) and `pcgw_search_zomboid.json` were recorded from PCGamingWiki's Media
 the infobox ids and the player count facts of `Network/Multiplayer` (no notes or other wiki text).
 `pcgw_synthetic_ranges.json` is hand-written (ranges, `unknown`, empty values, co-op/versus), because no real page
 with a range turned up.
+
+`gog_product_zomboid.json`, `gog_product_follow_the_meaning.json`, `gog_product_workers_resources.json` and
+`gog_product_sandustry.json` were recorded from `api.gog.com/products/<id>?expand=videos` on 2026-11-24 and cut down to
+id, title and the video list (Project Zomboid's list also has a non-YouTube Wistia video, on purpose).
